@@ -11,8 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout this code
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Checkout this extension
         uses: actions/checkout@v2
+        with:
+          ref: '${{ steps.get_version.outputs.VERSION }}'
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -21,14 +27,7 @@ jobs:
           extensions: intl, mbstring, xml, soap, zip, curl
 
       - name: Install EXT:tailor
-        run: composer global require typo3/tailor "^1.0" --prefer-dist --no-progress --no-suggest
-
-      - name: Some output
-        run: echo "The extension is $EXTENSION_KEY"
-
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: composer global require typo3/tailor --prefer-dist --no-progress --no-suggest
 
       - name: Upload EXT:${{ env.EXTENSION_KEY }} as ${{ steps.get_version.outputs.VERSION }} to TER
-        run: php ~/.composer/vendor/bin/tailor ter:publish ${{ steps.get_version.outputs.VERSION }} --path=./$TYPO3_EXTENSION_KEY --comment="New release ${{ steps.get_version.outputs.VERSION }}. See details, changelog and documentation on https://github.com/$GITHUB_REPOSITORY"
+        run: php ~/.composer/vendor/bin/tailor ter:publish ${{ steps.get_version.outputs.VERSION }} --path=./$TYPO3_EXTENSION_KEY --comment="New release of version ${{ steps.get_version.outputs.VERSION }} - see details, changelog and documentation on https://github.com/${{ GITHUB_REPOSITORY }}"
