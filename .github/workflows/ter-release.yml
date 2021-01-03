@@ -22,3 +22,6 @@ jobs:
 
       - name: Some output
         run: echo "The extension is $EXTENSION_KEY"
+
+      - name: Upload EXT:${{ env.EXTENSION_KEY }} as ${{ github.event.ref }} to TER
+        run: php ~/.composer/vendor/bin/tailor
