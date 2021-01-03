@@ -27,7 +27,7 @@ jobs:
         run: echo "The extension is $EXTENSION_KEY"
 
       - name: Get the version
-        id: version
+        id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - name: Upload EXT:${{ env.EXTENSION_KEY }} as ${{ steps.get_version.outputs.VERSION }} to TER
