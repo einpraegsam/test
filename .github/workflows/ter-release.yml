@@ -1,6 +1,9 @@
 name: TER release
 
-on: push
+on:
+  push:
+    tags:
+      - '*'
 
 jobs:
   ter-release:
@@ -23,5 +26,9 @@ jobs:
       - name: Some output
         run: echo "The extension is $EXTENSION_KEY"
 
-      - name: Upload EXT:${{ env.EXTENSION_KEY }} as ${{ github.event.ref }} to TER
-        run: php ~/.composer/vendor/bin/tailor
+      - name: Get the version
+        id: version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Upload EXT:${{ env.EXTENSION_KEY }} as ${{ steps.get_version.outputs.VERSION }} to TER
+        run: php ~/.composer/vendor/bin/tailor ter:publish 4.0.0 $TYPO3_EXTENSION_KEY --path=./$TYPO3_EXTENSION_KEY --comment="New release ${{ steps.get_version.outputs.VERSION }}. See details, changelog and documentation on https://github.com/$GITHUB_REPOSITORY"
