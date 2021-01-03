@@ -1,0 +1,24 @@
+name: TER release
+
+on: push
+
+jobs:
+  ter-release:
+    name: TER release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: intl, mbstring, xml, soap, zip, curl
+
+      - name: Install EXT:tailor
+        run: composer global require typo3/tailor "^1.0" --prefer-dist --no-progress --no-suggest
+
+      - name: Some output
+        run: echo "The extension is $EXTENSION_KEY"
