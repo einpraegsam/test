@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TYPO3_EXTENSION_KEY: 'osm'
-      DOCUMENTATION_URL: 'https://github.com/einpraegsam/powermail'
+      REPOSITORY_URL: 'https://github.com/einpraegsam/powermail'
       TYPO3_API_TOKEN: ${{ secrets.TYPO3_API_TOKEN }}
       TYPO3_API_USERNAME: ${{ secrets.TYPO3_API_USERNAME }}
       TYPO3_API_PASSWORD: ${{ secrets.TYPO3_API_PASSWORD }}
@@ -20,11 +20,6 @@ jobs:
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-
-      - name: Checkout this extension
-        uses: actions/checkout@v2
-        with:
-          ref: '${{ steps.get_version.outputs.VERSION }}'
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -36,4 +31,4 @@ jobs:
         run: composer global require typo3/tailor --prefer-dist --no-progress --no-suggest
 
       - name: Upload EXT:${{ env.EXTENSION_KEY }} as ${{ steps.get_version.outputs.VERSION }} to TER
-        run: php ~/.composer/vendor/bin/tailor ter:publish ${{ steps.get_version.outputs.VERSION }} --path=./${{ env.TYPO3_EXTENSION_KEY }} --comment="New release of version ${{ steps.get_version.outputs.VERSION }} - see details, changelog and documentation on ${{ env.DOCUMENTATION_URL }}"
+        run: php ~/.composer/vendor/bin/tailor ter:publish ${{ steps.get_version.outputs.VERSION }} --artefact=${{ env.REPOSITORY_URL }}/archive/${{ steps.get_version.outputs.VERSION }}.zip --comment="New release of version ${{ steps.get_version.outputs.VERSION }} - see details, changelog and documentation on ${{ env.REPOSITORY_URL }}"
